@@ -1,0 +1,38 @@
+/*
+	Filename: fir.cpp
+		FIR lab wirtten for WES/CSE237C class at UCSD.
+
+	INPUT:
+		x: signal (chirp)
+
+	OUTPUT:
+		y: filtered output
+
+*/
+
+#include "fir.h"
+
+void fir (
+  data_t *y,
+  data_t x
+  )
+{
+	#pragma HLS INTERFACE mode=s_axilite port=x
+	coef_t c[N] = {53, 0, -91, 0, 313, 500, 313, 0, -91, 0,53};
+	// Write your code here
+	static data_t fir_reg[N];
+	acc_t acc;
+	int i;
+	acc = 0;
+
+	for (i = N-1; i > 0; i--){
+		fir_reg[i] = fir_reg[i-1];
+		acc+= fir_reg[i]*c[N-1 - i];
+	}
+	fir_reg[0] = x;
+	acc += fir_reg[0]*c[N-1];
+	*y = acc;
+
+}
+
+
